@@ -33,7 +33,7 @@ public class StatServiceImpl implements StatService {
             throw new IllegalArgumentException("Введены неверные данные");
         }
 
-        if(!IPV4_PATTERN.matcher(statDto.getIp()).matches()) {
+        if (!IPV4_PATTERN.matcher(statDto.getIp()).matches()) {
             throw new IllegalArgumentException("Введен неверный IP адрес");
         }
 
