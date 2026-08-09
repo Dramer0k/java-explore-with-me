@@ -11,14 +11,19 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
       SPRING_DATASOURCE_USERNAME: stats_user
       SPRING_DATASOURCE_PASSWORD: stats_password
-      # Важно для Hibernate: не пытаемся создавать схему вручную, пусть делает Hibernate (ddl-auto=update)
-      # Если ты используешь init-stats.sql, убедись, что он лежит в папке инициализации Postgres (см. ниже)
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "true" # Можно убрать в продакшене, полезно для отладки
+      SPRING_JPA_SHOW_SQL: "true"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
     depends_on:
       stats-db:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
 
   stats-db:
     image: postgres:16.1
@@ -31,8 +36,7 @@ services:
       POSTGRES_PASSWORD: stats_password
     volumes:
       - stats-db-data:/var/lib/postgresql/data
-      # ВАЖНО: Если ты хочешь использовать init-stats.sql для создания таблиц,
-      # раскомментируй строку ниже и положи файл init-stats.sql в корень проекта рядом с docker-compose.yml
+      # Раскомментируй, если нужно инициализировать БД SQL-скриптом:
       # - ./init-stats.sql:/docker-entrypoint-initdb.d/init-stats.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U stats_user -d stats"]
