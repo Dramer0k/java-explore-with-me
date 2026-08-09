@@ -26,9 +26,9 @@ services:
     volumes:
       - stats-db-data:/var/lib/postgresql/data
 
-  ewm-service:
-    image: hello-world
-    container_name: ewm-service
+#  ewm-service:
+#    image: hello-world
+#    container_name: ewm-service
 
 volumes:
   stats-db-data:
