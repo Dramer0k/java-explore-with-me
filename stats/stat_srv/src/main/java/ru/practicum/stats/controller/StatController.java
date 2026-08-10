@@ -22,7 +22,7 @@ public class StatController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createHit(@RequestBody @Valid StatDto statDto) {
+    public void createHit(@Valid @RequestBody StatDto statDto) {
         log.debug("POST /hit: {app={}, uri={}, ip={}}", statDto.getApp(), statDto.getUri(), statDto.getIp());
         service.createHit(statDto);
     }
