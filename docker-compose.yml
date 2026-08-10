@@ -1,18 +1,18 @@
 services:
   stats-server:
-    build:
-      context: .
-      dockerfile: ./stats/stat_srv/Dockerfile
-    image: explore-with-me-stats
-    container_name: stats
+    build: stats/stat_srv
+    container_name: stats-server
     ports:
       - "9090:9090"
     environment:
+      SERVER_PORT: "9090"
       SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
       SPRING_DATASOURCE_USERNAME: stats_user
       SPRING_DATASOURCE_PASSWORD: stats_password
+
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
     depends_on:
       stats-db:
@@ -20,10 +20,21 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9090/actuator/health || exit 1"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 30
-      start_period: 40s
+      retries: 15
+      start_period: 90s
+
+  stats-client:
+    build: stats/stat_clt
+    container_name: stats-client
+    depends_on:
+      stats-server:
+        condition: service_healthy
+    environment:
+      STATS_SERVER_URL: http://stats-server:9090
+    ports:
+      - "8080:8080"
 
   stats-db:
     image: postgres:16.1
@@ -36,14 +47,12 @@ services:
       POSTGRES_PASSWORD: stats_password
     volumes:
       - stats-db-data:/var/lib/postgresql/data
-      # Раскомментируй, если нужно инициализировать БД SQL-скриптом:
-      # - ./init-stats.sql:/docker-entrypoint-initdb.d/init-stats.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U stats_user -d stats"]
       interval: 5s
       timeout: 5s
       retries: 20
-      start_period: 10s
+      start_period: 40s
     restart: unless-stopped
 
 volumes:
