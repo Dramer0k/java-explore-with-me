@@ -26,10 +26,9 @@ public class StatClient {
         this.serverUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
     }
 
-    public void hit(String uri, String app, String ip) {
+    public void hit(StatDto statDto) {
         try {
-            StatDto request = new StatDto(app, uri, ip, LocalDateTime.now());
-            restTemplate.postForObject(serverUrl + "hit", request, Void.class);
+            restTemplate.postForObject(serverUrl + "hit", statDto, Void.class);
         } catch (Exception e) {
             System.err.println("Failed to send hit to stats service: " + e.getMessage());
         }
