@@ -1,8 +1,10 @@
 package ru.practicum.stats.service;
 
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.StatDto;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.stats.model.mapper.StatMapper;
@@ -25,6 +27,7 @@ public class StatServiceImpl implements StatService {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
+    @Transactional
     public void createHit(StatDto statDto) {
 
         log.info("Post /hit {}", statDto);
@@ -45,6 +48,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ViewStatsDto> getStats(List<String> uris, String start, String end, boolean unique) {
 
         log.info("Get /stats uris={}, start={}, end={}, unique={}", uris, start, end, unique);
