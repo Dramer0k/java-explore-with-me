@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY target/stat_clt-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8070
+COPY ewm-service/target/*.jar app.jar
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
