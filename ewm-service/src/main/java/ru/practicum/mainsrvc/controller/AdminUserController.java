@@ -1,28 +1,28 @@
 package ru.practicum.mainsrvc.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.UserFullDto;
 import ru.practicum.mainsrvc.dto.UserShortDto;
-import ru.practicum.mainsrvc.service.UserService;
+import ru.practicum.mainsrvc.service.UserServiceImpl;
 
 import java.util.List;
 
+@Slf4j
+@ToString
 @RestController
 @RequestMapping("/admin/users")
 public class AdminUserController {
-
-    private static final Logger log = LoggerFactory.getLogger(AdminUserController.class);
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     private static final int MAX_PAGE_SIZE = 100000;
     private static final int MIN_PAGE_SIZE = 1;
 
-    public AdminUserController(UserService userService) {
+    public AdminUserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 

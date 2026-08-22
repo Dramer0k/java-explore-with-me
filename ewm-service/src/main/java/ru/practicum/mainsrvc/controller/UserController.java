@@ -8,22 +8,21 @@ import ru.practicum.mainsrvc.dto.*;
 import ru.practicum.mainsrvc.entity.Event;
 import ru.practicum.mainsrvc.entity.EventAction;
 import ru.practicum.mainsrvc.exception.ForbiddenException;
-import ru.practicum.mainsrvc.service.EventService;
-import ru.practicum.mainsrvc.service.ParticipationRequestService;
+import ru.practicum.mainsrvc.service.EventServiceImpl;
+import ru.practicum.mainsrvc.service.ParticipationRequestServiceImpl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final ParticipationRequestService participationRequestService;
-    private final EventService eventService;
+    private final ParticipationRequestServiceImpl participationRequestService;
+    private final EventServiceImpl eventService;
 
     public UserController(
-            ParticipationRequestService participationRequestService,
-            EventService eventService) {
+            ParticipationRequestServiceImpl participationRequestService,
+            EventServiceImpl eventService) {
         this.participationRequestService = participationRequestService;
         this.eventService = eventService;
     }
@@ -74,35 +73,15 @@ public class UserController {
             @PathVariable Long eventId,
             @RequestBody ParticipationRequestStatusDto dto) {
 
-        if (dto == null) {
-            throw new IllegalArgumentException("requestIds не может быть null");
-        }
-
-        if (dto.getRequestIds() == null || dto.getRequestIds().isEmpty()) {
-            throw new IllegalArgumentException("requestIds не может быть пустым");
-        }
-
-        if (dto.getStatus() == null) {
-            throw new IllegalArgumentException("status не может быть null");
-        }
-
-        List<ParticipationRequestDto> result = participationRequestService.processRequestStatus(
-                userId, eventId, dto);
-
-        List<ParticipationRequestDto> confirmed = result.stream()
-                .filter(r -> "CONFIRMED".equals(r.getStatus()))
-                .collect(Collectors.toList());
-
-        List<ParticipationRequestDto> rejected = result.stream()
-                .filter(r -> "REJECTED".equals(r.getStatus()))
-                .collect(Collectors.toList());
+        RequestStatusUpdateResult result = participationRequestService.processRequestStatus(userId, eventId, dto);
 
         EventRequestStatusUpdateResult response = new EventRequestStatusUpdateResult();
-        response.setConfirmedRequests(confirmed);
-        response.setRejectedRequests(rejected);
+        response.setConfirmedRequests(result.confirmedRequests());
+        response.setRejectedRequests(result.rejectedRequests());
 
         return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/{userId}/events")
     public ResponseEntity<EventFullDto> createEventForUser(

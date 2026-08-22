@@ -1,23 +1,22 @@
 package ru.practicum.mainsrvc.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.EventFullDto;
 import ru.practicum.mainsrvc.dto.NewEventDto;
 import ru.practicum.mainsrvc.dto.UpdateEventRequestDto;
-import ru.practicum.mainsrvc.service.EventService;
+import ru.practicum.mainsrvc.service.EventServiceImpl;
 
+@Slf4j
 @RestController
 @RequestMapping("/private/events")
 public class PrivateEventController {
 
-    private static final Logger log = LoggerFactory.getLogger(PrivateEventController.class);
-    private final EventService eventService;
+    private final EventServiceImpl eventService;
 
-    public PrivateEventController(EventService eventService) {
+    public PrivateEventController(EventServiceImpl eventService) {
         this.eventService = eventService;
     }
 

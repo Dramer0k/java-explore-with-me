@@ -3,10 +3,12 @@ package ru.practicum.mainsrvc.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.ToString;
 import ru.practicum.mainsrvc.entity.EventStatus;
 
 import java.time.LocalDateTime;
 
+@ToString
 public class EventFullDto {
     private Long id;
 

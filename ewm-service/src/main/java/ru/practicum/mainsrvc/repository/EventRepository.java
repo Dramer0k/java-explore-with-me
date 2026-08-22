@@ -35,13 +35,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e " +
             "JOIN FETCH e.category " +
             "JOIN FETCH e.initiator " +
-            "WHERE e.state IN :states " +
+            "WHERE (:states IS NULL OR e.state IN :states) " +
+            "AND (:users IS NULL OR e.initiator.id IN :users) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND e.eventDate >= :rangeStart " +
-            "AND e.eventDate <= :rangeEnd " +
-            "AND e.initiator.id IN :users " +
-            "AND e.category.id IN :categories")
+            "AND e.eventDate <= :rangeEnd")
     Page<Event> findAdminAll(
-            @Param("states") List<String> states,
+            @Param("states") List<EventStatus> states,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             @Param("users") List<Long> users,
@@ -212,4 +212,20 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "JOIN FETCH e.initiator " +
             "WHERE e.id = :eventId")
     Optional<Event> findByIdWithDetails(@Param("eventId") Long eventId);
-    }
+
+    @Query("SELECT e FROM Event e " +
+            "JOIN FETCH e.category " +
+            "JOIN FETCH e.initiator " +
+            "WHERE (:states IS NULL OR e.state IN :states) " +
+            "AND (:users IS NULL OR e.initiator.id IN :users) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "AND e.eventDate >= :rangeStart " +
+            "AND e.eventDate <= :rangeEnd")
+    Page<Event> findAllAdmin(
+            List<String> states,
+            LocalDateTime rangeStart,
+            LocalDateTime rangeEnd,
+            List<Long> users,
+            List<Long> categories,
+            Pageable pageable);
+}

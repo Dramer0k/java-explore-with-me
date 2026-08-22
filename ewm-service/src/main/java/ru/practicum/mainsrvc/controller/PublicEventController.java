@@ -1,26 +1,25 @@
 package ru.practicum.mainsrvc.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.EventFullDto;
 import ru.practicum.mainsrvc.dto.EventShortDto;
-import ru.practicum.mainsrvc.service.EventService;
+import ru.practicum.mainsrvc.dto.PublicEventSearchRequest;
+import ru.practicum.mainsrvc.service.EventServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/events")
 public class PublicEventController {
+    private final EventServiceImpl eventService;
 
-    private static final Logger log = LoggerFactory.getLogger(PublicEventController.class);
-    private final EventService eventService;
-
-    public PublicEventController(EventService eventService) {
+    public PublicEventController(EventServiceImpl eventService) {
         this.eventService = eventService;
     }
 
@@ -56,8 +55,20 @@ public class PublicEventController {
 
         String clientIp = request.getRemoteAddr();
 
-        List<EventShortDto> result = eventService.getPublicEvents(
-                categories, paid, text, rangeStart, rangeEnd, from, size, clientIp);
+        PublicEventSearchRequest searchRequest = new PublicEventSearchRequest();
+        searchRequest.setPaid(paid);
+        searchRequest.setSize(size);
+        searchRequest.setFrom(from);
+        searchRequest.setText(text);
+        searchRequest.setCategories(categories);
+        searchRequest.setRangeEnd(rangeEnd);
+        searchRequest.setRangeStart(rangeStart);
+
+        log.info("Request: {}", searchRequest);
+
+        List<EventShortDto> result = eventService.getPublicEvents(searchRequest, clientIp);
+
+        log.info("RESULT: {}", result);
 
         return ResponseEntity.ok(result);
     }

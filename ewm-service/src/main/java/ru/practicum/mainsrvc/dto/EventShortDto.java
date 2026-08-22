@@ -1,9 +1,11 @@
 package ru.practicum.mainsrvc.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
+@ToString
 public class EventShortDto {
 
     private Long id;

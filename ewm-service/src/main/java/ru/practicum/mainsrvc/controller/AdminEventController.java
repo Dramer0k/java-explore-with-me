@@ -3,10 +3,11 @@ package ru.practicum.mainsrvc.controller;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.mainsrvc.dto.AdminEventSearchRequest;
 import ru.practicum.mainsrvc.dto.EventFullDto;
 import ru.practicum.mainsrvc.dto.UpdateEventRequestDto;
 import ru.practicum.mainsrvc.entity.EventStatus;
-import ru.practicum.mainsrvc.service.EventService;
+import ru.practicum.mainsrvc.service.EventServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.List;
 @RequestMapping("/admin/events")
 public class AdminEventController {
 
-    private final EventService eventService;
+    private final EventServiceImpl eventService;
 
-    public AdminEventController(EventService eventService) {
+    public AdminEventController(EventServiceImpl eventService) {
         this.eventService = eventService;
     }
 
@@ -31,8 +32,11 @@ public class AdminEventController {
             @RequestParam(required = false) List<Long> users,
             @RequestParam(required = false) List<Long> categories) {
 
-        List<EventFullDto> result = eventService.getAdminEventsWithFilters(
-                states, rangeStart, rangeEnd, from, size, users, categories);
+        AdminEventSearchRequest searchRequest = new AdminEventSearchRequest(
+                states, rangeStart, rangeEnd, from, size, users, categories
+        );
+
+        List<EventFullDto> result = eventService.getAdminEventsWithFilters(searchRequest);
 
         return ResponseEntity.ok(result);
     }

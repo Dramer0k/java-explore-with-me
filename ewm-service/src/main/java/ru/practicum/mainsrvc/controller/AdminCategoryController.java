@@ -1,23 +1,21 @@
 package ru.practicum.mainsrvc.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.CategoryDto;
 import ru.practicum.mainsrvc.dto.NewCategoryDto;
 import ru.practicum.mainsrvc.dto.UpdateCategoryDto;
-import ru.practicum.mainsrvc.service.CategoryService;
+import ru.practicum.mainsrvc.service.CategoryServiceImpl;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
+    private final CategoryServiceImpl categoryService;
 
-    private static final Logger log = LoggerFactory.getLogger(AdminCategoryController.class);
-    private final CategoryService categoryService;
-
-    public AdminCategoryController(CategoryService categoryService) {
+    public AdminCategoryController(CategoryServiceImpl categoryService) {
         this.categoryService = categoryService;
     }
 

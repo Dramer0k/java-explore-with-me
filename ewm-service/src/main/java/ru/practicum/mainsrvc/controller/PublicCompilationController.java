@@ -1,22 +1,20 @@
 package ru.practicum.mainsrvc.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.CompilationDto;
-import ru.practicum.mainsrvc.service.CompilationService;
+import ru.practicum.mainsrvc.service.CompilationServiceImpl;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/compilations")
 public class PublicCompilationController {
+    private final CompilationServiceImpl compilationService;
 
-    private static final Logger log = LoggerFactory.getLogger(PublicCompilationController.class);
-    private final CompilationService compilationService;
-
-    public PublicCompilationController(CompilationService compilationService) {
+    public PublicCompilationController(CompilationServiceImpl compilationService) {
         this.compilationService = compilationService;
     }
 
