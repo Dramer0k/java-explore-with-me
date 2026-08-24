@@ -24,10 +24,7 @@ import ru.practicum.stat_clt.client.StatClient;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,7 +54,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     public List<EventShortDto> getPublicEvents(PublicEventSearchRequest searchRequest,
-            String clientIp) {
+                                               String clientIp) {
 
         validatePagination(searchRequest.getFrom(), searchRequest.getSize());
 
@@ -77,11 +74,6 @@ public class EventServiceImpl implements EventService {
 
         validateRangeDates(searchRequest.getRangeStart(), searchRequest.getRangeEnd());
 
-        String searchText = (searchRequest.getText() != null
-                && !searchRequest.getText().isBlank()) ? searchRequest.getText().trim() : null;
-        List<Long> categoriesList = (searchRequest.getCategories() != null
-                && !searchRequest.getCategories().isEmpty()) ? searchRequest.getCategories() : null;
-
         Sort sort = Sort.by("eventDate").ascending();
         Pageable pageable = PageRequest.of(searchRequest.getFrom() / searchRequest.getSize(),
                 searchRequest.getSize(), sort);
@@ -91,16 +83,38 @@ public class EventServiceImpl implements EventService {
         List<Event> events = pageResult.getContent();
 
         Map<String, Long> hitsMap = getHitsMapForEvents(events);
+        Map<Long, Long> confirmedMap = getConfirmedCountsForEvents(events);
 
         List<EventShortDto> result = new ArrayList<>(events.size());
-
         for (Event e : events) {
-            Long confirmedRequests = requestRepository.countConfirmedByEventId(e.getId());
-            result.add(eventDtoMapper.toEventShortDto(e, hitsMap, confirmedRequests));
+            long confirmed = confirmedMap.getOrDefault(e.getId(), 0L);
+            result.add(eventDtoMapper.toEventShortDto(e, hitsMap, confirmed));
         }
 
         return result;
     }
+
+    private Map<Long, Long> getConfirmedCountsForEvents(List<Event> events) {
+        if (events.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
+                .collect(Collectors.toList());
+
+        List<Object[]> rows = requestRepository.countConfirmedByEventIds(
+                eventIds, RequestStatus.CONFIRMED);
+
+        Map<Long, Long> map = new HashMap<>(rows.size());
+        for (Object[] row : rows) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            map.put(eventId, count);
+        }
+        return map;
+    }
+
+
 
     @Transactional(readOnly = true)
     public EventShortDto getEventShortById(Long eventId, String clientIp) {
@@ -179,7 +193,8 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
         log.info("Событие создано: id={}, title={}, initiatorId={}", event.getId(), event.getTitle(), initiatorId);
 
-        return eventDtoMapper.toEventFullDto(event, Collections.emptyMap(),
+        Map<String, Long> hitsMap = getHitsMapForEvent(event.getId());
+        return eventDtoMapper.toEventFullDto(event, hitsMap,
                 requestRepository.countConfirmedByEventId(event.getId()));
     }
 
@@ -201,7 +216,8 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
         log.info("Событие id={} обновлено пользователем id={}", eventId, initiatorId);
 
-        return eventDtoMapper.toEventFullDto(event, Collections.emptyMap(),
+        Map<String, Long> hitsMap = getHitsMapForEvent(event.getId());
+        return eventDtoMapper.toEventFullDto(event, hitsMap,
                 requestRepository.countConfirmedByEventId(event.getId()));
     }
 
@@ -246,7 +262,8 @@ public class EventServiceImpl implements EventService {
         }
 
         event = eventRepository.save(event);
-        return eventDtoMapper.toEventFullDto(event, Collections.emptyMap(),
+        Map<String, Long> hitsMap = getHitsMapForEvent(event.getId());
+        return eventDtoMapper.toEventFullDto(event, hitsMap,
                 requestRepository.countConfirmedByEventId(event.getId()));
     }
 
@@ -278,14 +295,16 @@ public class EventServiceImpl implements EventService {
 
         List<Event> events = eventsPage.getContent();
         Map<String, Long> hitsMap = getHitsMapForEvents(events);
+        Map<Long, Long> confirmedMap = getConfirmedCountsForEvents(events);
 
         return events.stream()
                 .map(e -> {
-                    Long confirmedRequests = requestRepository.countConfirmedByEventId(e.getId());
-                    return eventDtoMapper.toEventShortDto(e, hitsMap, confirmedRequests);
+                    long confirmed = confirmedMap.getOrDefault(e.getId(), 0L);
+                    return eventDtoMapper.toEventShortDto(e, hitsMap, confirmed);
                 })
                 .collect(Collectors.toList());
     }
+
 
     @Transactional(readOnly = true)
     public List<EventFullDto> getAdminEventsWithFilters(AdminEventSearchRequest request) {
@@ -347,16 +366,15 @@ public class EventServiceImpl implements EventService {
             statsMap = Collections.emptyMap();
         }
 
+        Map<Long, Long> confirmedMap = getConfirmedCountsForEvents(events);
+
         return events.stream()
-                .map(e -> eventDtoMapper.toEventFullDto(
-                        e,
-                        statsMap,
-                        requestRepository.countConfirmedByEventId(e.getId())
-                ))
+                .map(e -> {
+                    long confirmed = confirmedMap.getOrDefault(e.getId(), 0L);
+                    return eventDtoMapper.toEventFullDto(e, statsMap, confirmed);
+                })
                 .collect(Collectors.toList());
     }
-
-
 
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventRequestDto dto) {
         Event event = eventRepository.findById(eventId)
@@ -493,7 +511,9 @@ public class EventServiceImpl implements EventService {
         }
 
         event = eventRepository.save(event);
-        return eventDtoMapper.toEventFullDto(event, Collections.emptyMap(),
+
+        Map<String, Long> hitsMap = getHitsMapForEvent(event.getId());
+        return eventDtoMapper.toEventFullDto(event, hitsMap,
                 requestRepository.countConfirmedByEventId(event.getId()));
     }
 
@@ -521,26 +541,9 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
 
         log.info("Событие id={} успешно опубликовано", eventId);
-        return eventDtoMapper.toEventFullDto(event, Collections.emptyMap(),
-                requestRepository.countConfirmedByEventId(event.getId()));
-    }
 
-    public EventFullDto rejectEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено"));
-
-        if (event.getState() != EventStatus.PENDING) {
-            throw new ConflictException(
-                    "Нельзя отклонить событие: текущий статус — " + event.getState() +
-                            ". Отклонение разрешено только из состояния PENDING."
-            );
-        }
-
-        event.setState(EventStatus.CANCELED);
-        event = eventRepository.save(event);
-
-        log.info("Событие id={} успешно отклонено", eventId);
-        return eventDtoMapper.toEventFullDto(event, Collections.emptyMap(),
+        Map<String, Long> hitsMap = getHitsMapForEvent(event.getId());
+        return eventDtoMapper.toEventFullDto(event, hitsMap,
                 requestRepository.countConfirmedByEventId(event.getId()));
     }
 

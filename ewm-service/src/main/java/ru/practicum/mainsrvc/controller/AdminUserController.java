@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.UserFullDto;
 import ru.practicum.mainsrvc.dto.UserShortDto;
-import ru.practicum.mainsrvc.service.UserServiceImpl;
+import ru.practicum.mainsrvc.service.UserService;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/users")
 public class AdminUserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     private static final int MAX_PAGE_SIZE = 100000;
     private static final int MIN_PAGE_SIZE = 1;
 
-    public AdminUserController(UserServiceImpl userService) {
+    public AdminUserController(UserService userService) {
         this.userService = userService;
     }
 

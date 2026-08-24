@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import ru.practicum.mainsrvc.entity.ParticipationRequest;
 import ru.practicum.mainsrvc.entity.RequestStatus;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface RequestRepository extends JpaRepository<ParticipationRequest, Long> {
@@ -49,4 +50,15 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
     List<ParticipationRequest> findByRequesterId(Long requesterId);
 
     List<ParticipationRequest> findByEventId(Long eventId);
+
+    @Query("SELECT r.event.id, COUNT(r) " +
+            "FROM ParticipationRequest r " +
+            "WHERE r.event.id IN :eventIds " +
+            "AND r.status = :status " +
+            "GROUP BY r.event.id")
+    List<Object[]> countConfirmedByEventIds(
+            @Param("eventIds") Collection<Long> eventIds,
+            @Param("status") RequestStatus status);
+
+
 }

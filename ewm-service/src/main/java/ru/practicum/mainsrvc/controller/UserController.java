@@ -8,8 +8,8 @@ import ru.practicum.mainsrvc.dto.*;
 import ru.practicum.mainsrvc.entity.Event;
 import ru.practicum.mainsrvc.entity.EventAction;
 import ru.practicum.mainsrvc.exception.ForbiddenException;
-import ru.practicum.mainsrvc.service.EventServiceImpl;
-import ru.practicum.mainsrvc.service.ParticipationRequestServiceImpl;
+import ru.practicum.mainsrvc.service.EventService;
+import ru.practicum.mainsrvc.service.ParticipationRequestService;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final ParticipationRequestServiceImpl participationRequestService;
-    private final EventServiceImpl eventService;
+    private final ParticipationRequestService participationRequestService;
+    private final EventService eventService;
 
     public UserController(
-            ParticipationRequestServiceImpl participationRequestService,
-            EventServiceImpl eventService) {
+            ParticipationRequestService participationRequestService,
+            EventService eventService) {
         this.participationRequestService = participationRequestService;
         this.eventService = eventService;
     }

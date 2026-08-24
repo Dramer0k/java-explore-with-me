@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.EventFullDto;
 import ru.practicum.mainsrvc.dto.NewEventDto;
 import ru.practicum.mainsrvc.dto.UpdateEventRequestDto;
-import ru.practicum.mainsrvc.service.EventServiceImpl;
+import ru.practicum.mainsrvc.service.EventService;
 
 @Slf4j
 @RestController
 @RequestMapping("/private/events")
 public class PrivateEventController {
 
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
-    public PrivateEventController(EventServiceImpl eventService) {
+    public PrivateEventController(EventService eventService) {
         this.eventService = eventService;
     }
 

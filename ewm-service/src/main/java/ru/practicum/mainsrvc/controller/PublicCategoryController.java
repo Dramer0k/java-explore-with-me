@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.CategoryDto;
 import ru.practicum.mainsrvc.service.CategoryService;
-import ru.practicum.mainsrvc.service.CategoryServiceImpl;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ import java.util.List;
 public class PublicCategoryController {
     private final CategoryService categoryService;
 
-    public PublicCategoryController(CategoryServiceImpl categoryService) {
+    public PublicCategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 

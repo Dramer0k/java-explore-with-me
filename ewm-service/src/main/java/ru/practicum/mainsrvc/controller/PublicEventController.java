@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.EventFullDto;
 import ru.practicum.mainsrvc.dto.EventShortDto;
 import ru.practicum.mainsrvc.dto.PublicEventSearchRequest;
-import ru.practicum.mainsrvc.service.EventServiceImpl;
+import ru.practicum.mainsrvc.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 public class PublicEventController {
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
-    public PublicEventController(EventServiceImpl eventService) {
+    public PublicEventController(EventService eventService) {
         this.eventService = eventService;
     }
 

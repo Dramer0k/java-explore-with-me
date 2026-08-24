@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.mainsrvc.dto.CompilationDto;
+import ru.practicum.mainsrvc.dto.CompilationEventProjection;
 import ru.practicum.mainsrvc.dto.NewCompilationDto;
 import ru.practicum.mainsrvc.dto.UpdateCompilationDto;
 import ru.practicum.mainsrvc.entity.Compilation;
@@ -99,20 +100,20 @@ public class CompilationServiceImpl implements CompilationService {
         Page<Compilation> compsPage = compilationRepository.findAllOrByPinned(pinned, pageable);
         List<Compilation> compilations = compsPage.getContent();
 
+        Map<Long, List<Event>> eventsByCompilationId = new HashMap<>();
+
         if (!compilations.isEmpty()) {
             List<Long> ids = compilations.stream()
                     .map(Compilation::getId)
                     .toList();
 
-            List<Event> allEvents = compilationRepository.findEventsByCompilationIds(ids);
+            List<CompilationEventProjection> projections =
+                    compilationRepository.findEventsWithCompilationIds(ids);
 
-            Map<Long, List<Event>> eventsByCompilationId = new HashMap<>();
-            for (Event e : allEvents) {
-                for (Compilation c : e.getCompilations()) {
-                    eventsByCompilationId
-                            .computeIfAbsent(c.getId(), k -> new ArrayList<>())
-                            .add(e);
-                }
+            for (CompilationEventProjection p : projections) {
+                eventsByCompilationId
+                        .computeIfAbsent(p.getCompilationId(), k -> new ArrayList<>())
+                        .add(p.getEvent());
             }
 
             for (Compilation c : compilations) {
@@ -130,6 +131,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         return result;
     }
+
 
 
     @Transactional(readOnly = true)

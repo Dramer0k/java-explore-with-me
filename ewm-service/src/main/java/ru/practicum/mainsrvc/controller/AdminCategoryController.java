@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.CategoryDto;
 import ru.practicum.mainsrvc.dto.NewCategoryDto;
 import ru.practicum.mainsrvc.dto.UpdateCategoryDto;
-import ru.practicum.mainsrvc.service.CategoryServiceImpl;
+import ru.practicum.mainsrvc.service.CategoryService;
 
 @Slf4j
 @RestController
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
-    private final CategoryServiceImpl categoryService;
+    private final CategoryService categoryService;
 
-    public AdminCategoryController(CategoryServiceImpl categoryService) {
+    public AdminCategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 

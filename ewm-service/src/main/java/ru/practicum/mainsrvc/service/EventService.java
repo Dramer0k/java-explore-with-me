@@ -27,10 +27,11 @@ public interface EventService {
 
     EventFullDto publishEvent(Long eventId);
 
-    EventFullDto rejectEvent(Long eventId);
-
     List<EventFullDto> getAdminEventsList(int from, int size);
 
     Event getEventById(Long eventId);
+
+    List<EventShortDto> getPublicEvents(PublicEventSearchRequest searchRequest,
+                                        String clientIp);
 
 }

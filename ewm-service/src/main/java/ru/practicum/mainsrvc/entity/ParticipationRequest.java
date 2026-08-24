@@ -5,7 +5,13 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "participation_requests")
+@Table(
+        name = "participation_requests",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_participation_requests_requester_event",
+                columnNames = {"requester_id", "event_id"}
+        )
+)
 public class ParticipationRequest {
 
     @Id

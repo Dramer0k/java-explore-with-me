@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
-public class ParticipationRequestServiceImpl {
+public class ParticipationRequestServiceImpl implements ParticipationRequestService {
 
     private final RequestRepository requestRepository;
     private final EventRepository eventRepository;

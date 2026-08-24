@@ -7,7 +7,7 @@ import ru.practicum.mainsrvc.dto.AdminEventSearchRequest;
 import ru.practicum.mainsrvc.dto.EventFullDto;
 import ru.practicum.mainsrvc.dto.UpdateEventRequestDto;
 import ru.practicum.mainsrvc.entity.EventStatus;
-import ru.practicum.mainsrvc.service.EventServiceImpl;
+import ru.practicum.mainsrvc.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,9 +16,9 @@ import java.util.List;
 @RequestMapping("/admin/events")
 public class AdminEventController {
 
-    private final EventServiceImpl eventService;
+    private final EventService eventService;
 
-    public AdminEventController(EventServiceImpl eventService) {
+    public AdminEventController(EventService eventService) {
         this.eventService = eventService;
     }
 

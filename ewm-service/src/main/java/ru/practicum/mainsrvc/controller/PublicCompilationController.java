@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.CompilationDto;
-import ru.practicum.mainsrvc.service.CompilationServiceImpl;
+import ru.practicum.mainsrvc.service.CompilationService;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/compilations")
 public class PublicCompilationController {
-    private final CompilationServiceImpl compilationService;
+    private final CompilationService compilationService;
 
-    public PublicCompilationController(CompilationServiceImpl compilationService) {
+    public PublicCompilationController(CompilationService compilationService) {
         this.compilationService = compilationService;
     }
 

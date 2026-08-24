@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.mainsrvc.dto.CompilationDto;
 import ru.practicum.mainsrvc.dto.NewCompilationDto;
 import ru.practicum.mainsrvc.dto.UpdateCompilationDto;
-import ru.practicum.mainsrvc.service.CompilationServiceImpl;
+import ru.practicum.mainsrvc.service.CompilationService;
 
 @Slf4j
 @RestController
 @RequestMapping("/admin/compilations")
 public class AdminCompilationController {
-    private final CompilationServiceImpl compilationService;
+    private final CompilationService compilationService;
 
-    public AdminCompilationController(CompilationServiceImpl compilationService) {
+    public AdminCompilationController(CompilationService compilationService) {
         this.compilationService = compilationService;
     }
 

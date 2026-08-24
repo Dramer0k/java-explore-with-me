@@ -3,7 +3,7 @@ package ru.practicum.mainsrvc.service;
 import org.springframework.data.domain.Page;
 import ru.practicum.mainsrvc.dto.ParticipationRequestDto;
 import ru.practicum.mainsrvc.dto.ParticipationRequestStatusDto;
-import ru.practicum.mainsrvc.entity.ParticipationRequest;
+import ru.practicum.mainsrvc.dto.RequestStatusUpdateResult;
 import ru.practicum.mainsrvc.entity.RequestStatus;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public interface ParticipationRequestService {
 
     Page<ParticipationRequestDto> getRequestsByEvent(Long eventId, int from, int size);
 
-    List<ParticipationRequestDto> processRequestStatus(
+    RequestStatusUpdateResult processRequestStatus(
             Long userId, Long eventId, ParticipationRequestStatusDto dto);
 
     List<ParticipationRequestDto> getRequestsByUserAsList(Long userId, int from, int size);
@@ -33,10 +33,5 @@ public interface ParticipationRequestService {
     List<ParticipationRequestDto> getUserRequestsAsList(Long userId);
 
     List<ParticipationRequestDto> getEventRequestsAsList(Long eventId);
-
-    ParticipationRequestDto toDto(ParticipationRequest request);
-
-
-
 
 }
