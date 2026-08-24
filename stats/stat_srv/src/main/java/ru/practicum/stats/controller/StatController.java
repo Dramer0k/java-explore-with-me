@@ -34,6 +34,16 @@ public class StatController {
             @RequestParam(required = true) String end,
             @RequestParam(defaultValue = "false") boolean unique) {
 
-        return service.getStats(uris, start, end, unique);
+        log.info("Start: {}", start);
+
+        String startStr = start
+                .replace("%20", " ")
+                .trim();
+
+        String endStr = end
+                .replace("%20", " ")
+                .trim();
+
+        return service.getStats(uris, startStr, endStr, unique);
     }
 }

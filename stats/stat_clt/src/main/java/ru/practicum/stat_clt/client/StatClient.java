@@ -1,5 +1,6 @@
 package ru.practicum.stat_clt.client;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 @Service
 public class StatClient {
     private final RestTemplate restTemplate;
@@ -26,7 +28,9 @@ public class StatClient {
         this.serverUrl = serverUrl.endsWith("/") ? serverUrl : serverUrl + "/";
     }
 
-    public void hit(StatDto statDto) {
+    public void hit(String url, String app, String ip) {
+        String created = LocalDateTime.now().format(FORMATTER);
+        StatDto statDto = new StatDto(app, url, ip, created);
         try {
             restTemplate.postForObject(serverUrl + "hit", statDto, Void.class);
         } catch (Exception e) {
@@ -58,6 +62,7 @@ public class StatClient {
                     new ParameterizedTypeReference<List<ViewStatsDto>>() {
                     }
             );
+            log.info("RESPONSE: {}", response.getBody());
             return response.getBody();
         } catch (Exception e) {
             System.err.println("Failed to get stats from stats service: " + e.getMessage());
