@@ -4,5 +4,6 @@ import ru.practicum.mainsrvc.entity.Event;
 
 public interface CompilationEventProjection {
     Long getCompilationId();
+
     Event getEvent();
 }
